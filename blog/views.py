@@ -27,4 +27,4 @@ def home(request):
 
 
 def about(request):
-    return HttpResponse("<h1>Blog About</h1>")
+    return render(request, 'blog/about.html')
