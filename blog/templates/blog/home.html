@@ -1,0 +1,18 @@
+{% extends "blog/base.html" %}
+
+{% block title %} Home Page {% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            {% for post in posts %}
+            <h4>{{ post.title }}</h4>
+            <p>By: {{ post.author }}</p>
+            <p>{{ post.content }}</p>
+            <small>Posted at: {{ post.date_posted }}</small>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
