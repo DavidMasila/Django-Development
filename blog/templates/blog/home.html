@@ -10,6 +10,8 @@
             <article class="card content-section">
                 <div class="card-body">
                     <div class="article-metadata">
+                        <img class="rounded-circle article-svg" src="{{ post.author.profile.image.url }}"
+                            alt="author's profile">
                         <a class="mr-2" href="#">{{ post.author }}</a>
                         <small class="text-muted">{{ post.date_posted | date:"F d, Y H:i" }}</small>
                     </div>
