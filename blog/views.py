@@ -1,15 +1,65 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.urls import reverse_lazy
 from .models import Post
 
-@login_required
-def home(request):
-    context = {
-        'posts': Post.objects.all()
-    }
-    return render(request, 'blog/home.html', context)
+# @login_required
+# def home(request):
+#     context = {
+#         'posts': Post.objects.all()
+#     }
+#     return render(request, 'blog/home.html', context)
 
+@method_decorator(login_required, name='dispatch')
+class PostListView(ListView):
+    model = Post
+    template_name = 'blog/home.html' #<app>/<model>_<viewtype>.html
+    context_object_name = 'posts'
+    ordering = ['-date_posted']
 
+@method_decorator(login_required, name='dispatch')
+class PostDetailView(DetailView):
+    #having the model Post here will sync with the url's int:pk
+    model = Post
+
+@method_decorator(login_required, name='dispatch')
+class PostCreateView(CreateView):
+    model = Post
+    fields = ['title','content']
+
+    #allows us to tell the form who the user is.
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+    
+#lets try using the mixin for making some views require login
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post
+    fields = ['title', 'content']
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+    
+    #testing our permission to edit a post
+    def test_func(self):
+        post = self.get_object() #gets the post we are trying to update
+        if self.request.user == post.author:
+            return True
+        return False
+
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Post
+    success_url = reverse_lazy('blog-home')
+    #making sure its passes the Test Mixin test.
+    def test_func(self):
+        post = self.get_object() #gets the post we are trying to update
+        if self.request.user == post.author:
+            return True
+        return False
+    
 def about(request):
     return render(request, 'blog/about.html')
