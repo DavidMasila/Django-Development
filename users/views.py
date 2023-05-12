@@ -56,7 +56,6 @@ def profile(request):
     return render(request, 'users/profile.html', context)
 
 # class ProfileUpdateView(LoginRequiredMixin,UpdateView):
-#     model = Profile
 #     form_class = UserUpdateForm
 #     template_name='users/profile.html'
 #     success_url =reverse_lazy('profile')
